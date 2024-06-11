@@ -2,71 +2,75 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { Holder } from './Holder';
 import type { HolderInstance } from './Holder';
-import { render } from './util';
+import { render, canUseDom } from './util';
 
 type ContainerType = DocumentFragment | Element;
+
+interface ContainerGroup {
+  portal: ContainerType;
+  root: ContainerType;
+}
 
 const createDefaultFragment = () => {
   const container = document.createDocumentFragment();
   document.body.appendChild(container);
   return container;
 };
-const createServerDefaultFragment = () => {
-  if (typeof window !== 'undefined') {
-    return createDefaultFragment();
-  }
-};
 
 export const usePortal = () => {
 
-  const [portalContainer, setPortalContainer] = React.useState<ContainerType | void>(createServerDefaultFragment);
-  const [rootContainer, setRootContainer] = React.useState<ContainerType | void>(createServerDefaultFragment);
+  const [defaultContainer, setDefaultContainer] = React.useState<ContainerGroup | void>(() => {
+    if (canUseDom()) {
+      // Non-SSR mode
+      return {
+        portal: createDefaultFragment(),
+        root: createDefaultFragment(),
+      };
+    }
+  });
+  const [container, setContainer] = React.useState<ContainerGroup>();
   const rootHolderRef = React.useRef<HolderInstance>(null);
   const portalHolderRef = React.useRef<HolderInstance>(null);
 
-  React.useEffect(() => {
-    // Initialization, executed only once
-    if (!portalContainer) {
-      setPortalContainer(createDefaultFragment());
-    }
-    if (!rootContainer) {
-      setRootContainer(createDefaultFragment());
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const PortalHolder = React.useMemo(() => {
-    if (!portalContainer) {
+    const mergedPortalContainer = container?.portal ?? defaultContainer?.portal;
+    if (!mergedPortalContainer) {
       return null;
     }
     return createPortal(
       <Holder ref={portalHolderRef} />,
-      portalContainer,
+      mergedPortalContainer,
     );
-  }, [portalContainer]);
+  }, [container?.portal, defaultContainer?.portal]);
 
   const getHolderRef = React.useCallback(() => {
     return portalHolderRef.current ? portalHolderRef : rootHolderRef;
   }, []);
 
-  const mount = React.useCallback((options: { portal?: ContainerType; root?: ContainerType }) => {
-    const { portal, root } = options;
-    if (portal) {
-      setPortalContainer(portal);
-    }
-    if (root) {
-      setRootContainer(root);
-    }
+  const mount = React.useCallback((options: Partial<ContainerGroup>) => {
+    setContainer(pre => Object.assign({}, pre, options));
   }, []);
 
   React.useEffect(() => {
-    if (rootContainer) {
+    // Initialization, executed only once
+    if (!defaultContainer) {
+      setDefaultContainer({
+        portal: createDefaultFragment(),
+        root: createDefaultFragment(),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    const mergedRootContainer = container?.root ?? defaultContainer?.root;
+    if (mergedRootContainer) {
       return render(
-        rootContainer,
+        mergedRootContainer,
         <Holder ref={rootHolderRef} />,
       );
     }
-  }, [rootContainer]);
+  }, [container?.root, defaultContainer?.root]);
 
   return React.useMemo(() => {
     return {

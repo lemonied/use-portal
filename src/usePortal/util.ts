@@ -1,4 +1,4 @@
-import type React from 'react';
+import type * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 // Let compiler not to search module usage
@@ -43,4 +43,12 @@ export function render(container: Element | DocumentFragment, children: React.Re
     unmount();
     container.parentNode?.removeChild(container);
   };
+}
+
+export function canUseDom() {
+  return !!(
+    typeof window !== 'undefined' &&
+    window.document &&
+    window.document.createElement
+  );
 }
