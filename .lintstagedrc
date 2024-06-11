@@ -1,0 +1,11 @@
+{
+  "*.{css,less}": [
+    "stylelint"
+  ],
+  "*.{js,jsx}": [
+    "eslint"
+  ],
+  "*.{ts,tsx}": [
+    "eslint"
+  ]
+}
