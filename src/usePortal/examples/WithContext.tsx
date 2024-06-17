@@ -45,7 +45,7 @@ export default () => {
             };
             render();
           }}
-        >open without holder</Button>
+        >open with holder</Button>
       </Space>
     </Context.Provider>
   );
