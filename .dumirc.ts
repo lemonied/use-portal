@@ -9,6 +9,12 @@ export default defineConfig({
   mfsu: false,
   title: 'usePortal',
   themeConfig: {
-    name: '@lemonied/use-portal',
+    name: 'usePortal',
+    logo: false,
+    editLink: false,
+    footer: false,
+    socialLinks: {
+      github: 'https://github.com/lemonied/use-portal',
+    },
   },
 });

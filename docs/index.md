@@ -1,22 +1,10 @@
 ---
 hero:
-  title: library
+  title: usePortal
   description: A react library developed with dumi
-  actions:
-    - text: Hello
-      link: /
-    - text: World
-      link: /
-features:
-  - title: Hello
-    emoji: 💎
-    description: Put hello description here
-  - title: World
-    emoji: 🌈
-    description: Put world description here
-  - title: '!'
-    emoji: 🚀
-    description: Put ! description here
 ---
 
-@lemonied/use-portal
+[![NPM version](https://img.shields.io/npm/v/@lemonied/use-portal.svg?style=flat)](https://npmjs.org/package/@lemonied/use-portal)
+&nbsp;[![NPM downloads](http://img.shields.io/npm/dm/@lemonied/use-portal.svg?style=flat)](https://npmjs.org/package/@lemonied/use-portal)
+
+- [API](./components/use-portal)

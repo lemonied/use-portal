@@ -3,15 +3,83 @@
 [![NPM version](https://img.shields.io/npm/v/@lemonied/use-portal.svg?style=flat)](https://npmjs.org/package/@lemonied/use-portal)
 [![NPM downloads](http://img.shields.io/npm/dm/@lemonied/use-portal.svg?style=flat)](https://npmjs.org/package/@lemonied/use-portal)
 
-A react library developed with dumi
+## Install
+```bash
+npm install @lemonied/use-portal
+```
 
 ## Usage
 
-TODO
+### General Use
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { usePortal } from '@lemonied/use-portal';
+
+export default () => {
+  const domRef = React.useRef<HTMLDivElement>(null);
+  const [renderPortal] = usePortal();
+
+  React.useEffect(() => {
+    renderPortal(
+      ReactDOM.createPortal(
+        <div>Hello World</div>,
+        domRef.current!,
+      ),
+    );
+  }, [renderPortal]);
+
+  return (
+    <>
+      <div ref={domRef} />
+    </>
+  );
+};
+```
+
+### Use with antd Modal
+
+```tsx
+import React from 'react';
+import { Button, Modal } from 'antd';
+import { usePortal } from '@lemonied/use-portal';
+
+export default () => {
+  const [renderPortal] = usePortal();
+  return (
+    <>
+      <Button
+        onClick={() => {
+          const render = (open = true) => {
+            renderPortal(
+              <Modal
+                open={open}
+                title="Use with antd Modal"
+                onCancel={() => render(false)}
+                afterClose={() => {
+                  renderPortal(null);
+                }}
+              >Modal Content</Modal>,
+            );
+          };
+          render();
+        }}
+      >Open Modal</Button>
+    </>
+  );
+};
+```
 
 ## Options
 
-TODO
+```tsx
+type renderPortal = (node: React.ReactNode) => void;
+
+type holder = React.ReactElement;
+
+type usePortal = () => [renderPortal, holder] as const;
+```
 
 ## Development
 

@@ -16,26 +16,40 @@ function toggleWarning(skip: boolean) {
   }
 }
 
-export function render(container: Element | DocumentFragment, children: React.ReactElement) {
-  const reactVersion = ReactDOM.version;
+export function render(container: Element | DocumentFragment, children: React.ReactElement, callback?: () => void) {
+  const reactVersion = ReactDOM.version || '';
   const majorVersion = parseInt(reactVersion.split('.')[0], 10);
   let unmount: () => void;
+  let createRoot: null | ((c: typeof container) => any) = null;
 
-  if (majorVersion < 18) {
+  if (majorVersion >= 18) {
+    createRoot = fullClone.createRoot;
+  }
+
+  if (createRoot) {
+    toggleWarning(true);
+    const root = createRoot(container);
+    toggleWarning(false);
+    root.render(children);
+    let resolve: () => void;
+    let reject: () => void;
+    new Promise<void>((_resolve, _reject) => {
+      resolve = _resolve;
+      reject = _reject;
+    }).then(callback).catch(() => { /** ignore error */ });
+    const timer = window.setTimeout(resolve!, 20);
+    unmount = () => {
+      window.clearTimeout(timer);
+      reject();
+      // Delay to unmount to avoid React 18 sync warning
+      Promise.resolve().then(() => root.unmount());
+    };
+  } else {
     // eslint-disable-next-line react/no-deprecated
-    ReactDOM.render(children, container);
+    ReactDOM.render(children, container, callback);
     unmount = () => {
       // eslint-disable-next-line react/no-deprecated
       ReactDOM.unmountComponentAtNode(container);
-    };
-  } else {
-    toggleWarning(true);
-    const root = fullClone.createRoot(container);
-    toggleWarning(false);
-    root.render(children);
-    unmount = () => {
-      // Delay to unmount to avoid React 18 sync warning
-      Promise.resolve().then(() => root.unmount());
     };
   }
 

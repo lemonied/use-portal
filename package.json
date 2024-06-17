@@ -1,6 +1,6 @@
 {
   "name": "@lemonied/use-portal",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A react library developed with dumi",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,7 +27,7 @@
     "type": "git",
     "url": "https://github.com/lemonied/use-portal"
   },
-  "homepage": "https://lemonied.github.io/use-portal",
+  "homepage": "https://lemonied.github.io/use-portal/components/use-portal",
   "keywords": [
     "component",
     "components",
@@ -49,6 +49,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "react": ">=16.9.0",
     "react-dom": ">=16.9.0"

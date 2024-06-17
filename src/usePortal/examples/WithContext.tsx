@@ -5,8 +5,8 @@ import ModalContent, { Context } from './ModalContentWithContext';
 
 export default () => {
 
-  const { getHolderRef } = usePortal();
-  const { getHolderRef: getHolderRef2, holder } = usePortal();
+  const [renderPortal] = usePortal();
+  const [renderPortal2, holder] = usePortal();
 
   return (
     <Context.Provider value="Hello World">
@@ -14,15 +14,14 @@ export default () => {
       <Space>
         <Button
           onClick={() => {
-            const holderRef = getHolderRef();
             const render = (open = true) => {
-              holderRef.current?.setState(
+              renderPortal(
                 <ModalContent
                   open={open}
                   title="modal without holder"
                   onCancel={() => render(false)}
                   afterClose={() => {
-                    holderRef.current?.setState(null);
+                    renderPortal(null);
                   }}
                 >modal without holder</ModalContent>,
               );
@@ -32,15 +31,14 @@ export default () => {
         >open without holder</Button>
         <Button
           onClick={() => {
-            const holderRef = getHolderRef2();
             const render = (open = true) => {
-              holderRef.current?.setState(
+              renderPortal2(
                 <ModalContent
                   open={open}
                   title="modal with holder"
                   onCancel={() => render(false)}
                   afterClose={() => {
-                    holderRef.current?.setState(null);
+                    renderPortal2(null);
                   }}
                 >modal with holder</ModalContent>,
               );
